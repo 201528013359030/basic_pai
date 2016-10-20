@@ -10,6 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\WebService;
 use app\models\PaiUser;
+use yii\filters\Cors;
+use yii\helpers\ArrayHelper;
 use app\models\UtilsModel;
 
 /**
@@ -17,6 +19,8 @@ use app\models\UtilsModel;
  */
 class PaiPicturesController extends Controller
 {
+	public $enableCsrfValidation = false;
+
     /**
      * @inheritdoc
      */
@@ -26,7 +30,7 @@ class PaiPicturesController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['GET'],
                 ],
             ],
         ];
@@ -52,7 +56,10 @@ class PaiPicturesController extends Controller
 //             'dataProvider' => $dataProvider,
 //         ]);
 //     }
+public function test(){
 
+	echo "ddd";
+}
     /**
      * Lists all PaiPictures models.
      *
@@ -71,11 +78,11 @@ class PaiPicturesController extends Controller
     	$request=Yii::$app->request;
     	$session=Yii::$app->session;
 
-    	$uid=$request->get('uid')||die('获取uid失败');
-    	$eguid=$request->get('eguid')||die('获取eguid失败');
-    	$auth_token=$request->get('auth_token')||die('获取auth_token失败');
-    	$gid=$request->get('gid')||die('获取gid失败');
-    	$nid=$request->get('nid')||die('获取nid失败');
+    	$uid=$request->get('uid');
+    	$eguid=$request->get('eguid');
+    	$auth_token=$request->get('auth_token');
+    	$gid=$request->get('gid');
+    	$nid=$request->get('nid');
     	$eid=explode('@', $uid)[1];
     	$api_key='36116967d1ab95321b89df8223929b14207b72b1';
     	$webServiceUrl = "http://192.168.139.160/elgg/services/api/rest/json/";
@@ -103,7 +110,6 @@ class PaiPicturesController extends Controller
     		return '认证失败!';
     	}
 
-
 //     	$searchModel = new PaiPicturesSearch();
 //     	$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -112,6 +118,8 @@ class PaiPicturesController extends Controller
     	//获取用户信息
     	$uid=$webService->getUid();
     	$user= PaiUser::findone($uid);
+    	Yii::$app->session['userName']=$user->user_name;
+    	Yii::$app->session['uid']=$user->user_id;
 
     	if(!$user){
     		//游客
@@ -158,12 +166,11 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionDetail($id)
+    public function actionDetail($id='6')
     {
 //     	$sql='select * from pai_pictures where
-
-    	return $this->render('detail', [
-    			'model' => $this->findModel($id)->toArray(),
+    	return $this->renderFile('@app/views/pai-pictures/detail.php', [
+    			'model' => $this->findModel($id),
     	]);
     }
 
@@ -172,8 +179,10 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionRight($id){
-    	$admin=$session->get('admin');
+    public function actionRight(){
+//     	$admin=$session->get('admin');
+    	$admin='1';
+    	$id=Yii::$app->request->get ( 'id', '0' );
     	if($admin==0){
     		//向右查看
     		$modelRight=PaiPictures::find()->where([
@@ -181,25 +190,23 @@ class PaiPicturesController extends Controller
     		])->andwhere([
     				'<',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_DESC
-    		])->limit(6)->asArray->all;
-    	}
+    		])->limit(6)->asArray()->all();
+     	}
     	elseif ($admin==1){
 
     		//向右查看
     		$modelRight=PaiPictures::find()->where([
     				'<',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_DESC
-    		])->limit(6)->asArray->all;
+    		])->limit(6)->asArray()->all();
     	}
-    	echo json_encode ( [
-    			'modelRight' => $modelRight
-    	] );
+		echo json_encode($modelRight);
     }
 
     /**
@@ -207,8 +214,10 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionLeft($id){
-    	$admin=$session->get('admin');
+    public function actionLeft(){
+//     	$admin=$session->get('admin');
+    	$admin='1';
+    	$id=Yii::$app->request->get ( 'id', '0' );
     	if($admin==0){
 
     		//向左查看
@@ -217,26 +226,25 @@ class PaiPicturesController extends Controller
     		])->andwhere([
     				'>',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_ASC
-    		])->limit(6)->asArray->all;
+    		])->limit(6)->asArray()->all();
+
 
     	}
     	elseif ($admin==1){
 
     		//向左查看
     		$modelLeft=PaiPictures::find()->where([
-    				'>=',
+    				'>',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_ASC
-    		])->limit(6)->asArray->all;
+    		])->limit(6)->asArray()->all();
     	}
-    	echo json_encode ( [
-    			'modelLeft' => $modelLeft
-    	] );
+    	echo json_encode ($modelLeft );
     }
 
     /**
@@ -251,68 +259,9 @@ class PaiPicturesController extends Controller
         ]);
     }
 
-//     /**
-//      * Creates a new PaiPictures model.
-//      * If creation is successful, the browser will be redirected to the 'view' page.
-//      * @return mixed
-//      */
-//     public function actionCreate()
-//     {
+    public  function actionUpload(){
 
-//     	$model = new PaiPictures();
-//     	$utils=new UtilsModel();
-
-//         $model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
-
-//         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-//             return $this->redirect(['view', 'id' => $model->fID]);
-//         } else {
-//             return $this->render('create', [
-//                 'model' => $model,
-//             ]);
-//         }
-//     }
-
-
-    public  function actionUploadpic(){
-
-	    return $this->renderFile('@app/views/pai-pictures/uploadpic.php');
-    }
-
-    /**
-     * Creates a new PaiPictures model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-
-    	$model = new PaiPictures();
-    	$utils=new UtilsModel();
-
-    	$model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
-    	$model->fFileName='';
-    	$model->fPreviewPath='';
-    	$model->fDownloadPath='';
-    	$model->fOwner='';
-    	$model->fUserName='';
-    	$model->fCreateTime='';
-    	$model->fDescription='3@15';
-    	$model->fTaskID='';
-    	$model->fThumb='';
-
-    	print_r($model);
-    	return;
-
-    	if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-    		return $this->redirect(['view', 'id' => $model->fID]);
-    	} else {
-    		return $this->render('create', [
-    				'model' => $model,
-    		]);
-    	}
+	    return $this->renderFile('@app/views/pai-pictures/upload.php');
     }
 
     /**
@@ -321,27 +270,69 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public function actionCreate()
     {
+    	$data=Yii::$app->request->post('params');
 
-    	$model=PaiPictures::findOne($id);
+    	$model = new PaiPictures();
+    	$utils=new UtilsModel();
 
-    	if ($model->load(Yii::$app->request->get()) && $model->save()) {
+    	$arr= explode('..', $data['uploadPath']);
+    	if(count($arr)>1){
+    		$fThumb = $arr[0].'small.'.$arr[1];
+    	}else{
+    		$fThumb = $data['uploadPath'];
+    	}
 
-    		echo json_encode ( [
-    				'result' => 'success'
-    		] );
+    	$model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
+    	$model->fFileName=$data['fileName'];
+    	$model->fPreviewPath=$data['uploadPath'];
+    	$model->fDownloadPath=$data['uploadPath'];
+    	$model->fOwner=Yii::$app->session->get('uid','3@15');
+    	$model->fUserName=Yii::$app->session->get('userName','');
+    	$model->fCreateTime=date ( 'Y-m-d H:i:s' );
+    	$model->fDescription='';
+    	$model->fTaskID=$data['taskID'];
+    	$model->fThumb=$fThumb;
 
-    		//             return $this->redirect(['view', 'id' => $model->fID]);
+    	if($model->save()){
+    		echo json_encode(['success'=>'success']);
+    		exit;
+    	}else {
+    		echo json_encode(['success'=>'save fail','model'=>$model->fFileName]);
+    		exit;
+    	}
+
+
+//     	print_r($model);
+//     	return;
+
+//     	if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+//     		return $this->redirect(['view', 'id' => $model->fID]);
+//     	} else {
+//     		return $this->render('create', [
+//     				'model' => $model,
+//     		]);
+//     	}
+    }
+
+    /**
+     * Updates an existing PaiPictures model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionUpdate()
+    {
+    	$id=Yii::$app->request->get( 'id', '0' );
+    	$fDescription=Yii::$app->request->get ('fDescription');
+    	$model = PaiPictures::findOne($id);
+    	$model['fDescription']=$fDescription;
+    	if ($model->save()) {
+    		echo 'success';
     	} else {
-
-    		echo json_encode ( [
-    				'result' => 'error'
-    		] );
-
-    		//             return $this->render('update', [
-    		//                 'model' => $model,
-    		//             ]);
+    		echo 'error';
     	}
     }
 
@@ -351,54 +342,19 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete()
     {
-    	if( $this->findModel($id)->delete())
+    	$id=Yii::$app->request->get ('id')||die('没有得到要删除的ID');
+    	$id=Yii::$app->request->get ('id');
+    	if(PaiPictures::findOne($id)->delete())
     	{
-
-    		echo json_encode ( [
-    				'result' => 'success'
-    		] );
+    		echo  'success';
     	}else{
-    		echo json_encode ( [
-    				'result' => 'error'
-    		] );
+    		echo 'error';
     	}
 
     	//         return $this->redirect(['index']);
     }
-
-//     /**
-//      * Updates an existing PaiPictures model.
-//      * If update is successful, the browser will be redirected to the 'view' page.
-//      * @param string $id
-//      * @return mixed
-//      */
-//     public function actionUpdate($id)
-//     {
-//         $model = $this->findModel($id);
-
-//         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-//             return $this->redirect(['view', 'id' => $model->fID]);
-//         } else {
-//             return $this->render('update', [
-//                 'model' => $model,
-//             ]);
-//         }
-//     }
-
-//     /**
-//      * Deletes an existing PaiPictures model.
-//      * If deletion is successful, the browser will be redirected to the 'index' page.
-//      * @param string $id
-//      * @return mixed
-//      */
-//     public function actionDelete($id)
-//     {
-//         $this->findModel($id)->delete();
-
-//         return $this->redirect(['index']);
-//     }
 
     /**
      * Finds the PaiPictures model based on its primary key value.
@@ -409,9 +365,8 @@ class PaiPicturesController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = PaiPictures::findOne($id)) !== null) {
-
-        	return $model;
+        if (($model = PaiPictures::findOne($id)->toArray()) !== null) {
+            return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }

@@ -12,7 +12,7 @@ use yii\filters\VerbFilter;
 /**
  * PaiuserController implements the CRUD actions for PaiUser model.
  */
-class PaiuserController extends Controller
+class PaiUserController extends Controller
 {
     /**
      * @inheritdoc

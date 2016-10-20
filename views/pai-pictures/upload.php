@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,8 +27,11 @@ body{padding-top:.875rem;}
 
 <!--引入native.js 进行调用-->
 <script src="../views/js/native.js"></script>
+<script src="../views/js/jquery.js"></script>
 </head>
+
 <body>
+
 <p class="lead"><a  href="javascript:window.location.reload();"> 刷新 </a></p>
 <br>
 
@@ -48,12 +50,18 @@ body{padding-top:.875rem;}
 
 
 <div class="btnBox">
-	<button class="button button-xs" onclick="chooseSheetPhoto();">选择照片<span id="tip_choosephoto" style="display: none;">(上传中需等待)</span></button>
+	<button type="button class="button button-xs"  onclick="chooseSheetPhoto();">选择照片<span id="tip_choosephoto" style="display: none;">(上传中需等待)</span></button>
 </div>
 
 <script>
-function chooseSheetPhoto(){
+// $(document).ready(function(){
+// 	$("button").click(function(){
+// 		postData('1');
 
+// 	});
+// 	});
+
+function chooseSheetPhoto(){
 	var transferid = parseInt(new Date().getTime()/1000);
 	NativeInteractive.chooseSheetPhoto({"webAppTransferID":transferid,"editType":1});
 }
@@ -75,8 +83,6 @@ function OnChoosePhotoCb(datas){
 			}
 			NativeInteractive.uploadGivenFile(setting);
 		}
-
-
 }
 function OnUploadGivenFileCb(datas){
 	var status = datas.result.status,
@@ -87,10 +93,36 @@ function OnUploadGivenFileCb(datas){
 			document.getElementById("tip_choosephoto").style.display = "none";
 			var str_para = JSON.stringify(params);
 			alert("OnUploadGivenFileCb 图片已上传:"+str_para);
+			postData(params);
 		}
 	}
 }
 
+//获取左面数据
+function postData(params){
+	var length=0;
+	$.ajax({
+		type:'POST',
+		url:'index.php?r=pai-pictures/create',
+		async:'false',
+		data:{'params':params},
+		dataType:'json',
+		error:function(){
+			alert('error');
+// 			$.alert({
+// 				title:'提示信息',
+// 				content:"出错了.....",
+// 				confirmButton:'确认'
+// 				});
+			},
+	   success:function(datas){
+		   alert(JSON.stringify(datas));
+		   location.reload();
+	   },
+	 complete:function(){
+				}
+		});
+	}
 </script>
 
 <!--**
