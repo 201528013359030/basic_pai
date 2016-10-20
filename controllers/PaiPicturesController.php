@@ -251,27 +251,33 @@ class PaiPicturesController extends Controller
         ]);
     }
 
-    /**
-     * Creates a new PaiPictures model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
+//     /**
+//      * Creates a new PaiPictures model.
+//      * If creation is successful, the browser will be redirected to the 'view' page.
+//      * @return mixed
+//      */
+//     public function actionCreate()
+//     {
 
-    	$model = new PaiPictures();
-    	$utils=new UtilsModel();
+//     	$model = new PaiPictures();
+//     	$utils=new UtilsModel();
 
-        $model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
+//         $model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+//         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
-            return $this->redirect(['view', 'id' => $model->fID]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
+//             return $this->redirect(['view', 'id' => $model->fID]);
+//         } else {
+//             return $this->render('create', [
+//                 'model' => $model,
+//             ]);
+//         }
+//     }
+
+
+    public  function actionUploadpic(){
+
+	    return $this->renderFile('@app/views/pai-pictures/uploadpic.php');
     }
 
     /**
@@ -286,6 +292,18 @@ class PaiPicturesController extends Controller
     	$utils=new UtilsModel();
 
     	$model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
+    	$model->fFileName='';
+    	$model->fPreviewPath='';
+    	$model->fDownloadPath='';
+    	$model->fOwner='';
+    	$model->fUserName='';
+    	$model->fCreateTime='';
+    	$model->fDescription='3@15';
+    	$model->fTaskID='';
+    	$model->fThumb='';
+
+    	print_r($model);
+    	return;
 
     	if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
@@ -305,9 +323,10 @@ class PaiPicturesController extends Controller
      */
     public function actionUpdate($id)
     {
-    	$model = $this->findModel($id);
 
-    	if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    	$model=PaiPictures::findOne($id);
+
+    	if ($model->load(Yii::$app->request->get()) && $model->save()) {
 
     		echo json_encode ( [
     				'result' => 'success'
@@ -391,7 +410,8 @@ class PaiPicturesController extends Controller
     protected function findModel($id)
     {
         if (($model = PaiPictures::findOne($id)) !== null) {
-            return $model;
+
+        	return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
