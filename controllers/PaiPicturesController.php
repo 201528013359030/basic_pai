@@ -10,7 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use app\models\WebService;
 use app\models\PaiUser;
-use app\models\UtilsModel;
+use yii\filters\Cors;
+use yii\helpers\ArrayHelper;
 
 /**
  * PaiPicturesController implements the CRUD actions for PaiPictures model.
@@ -26,7 +27,7 @@ class PaiPicturesController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    'delete' => ['GET'],
                 ],
             ],
         ];
@@ -52,7 +53,10 @@ class PaiPicturesController extends Controller
 //             'dataProvider' => $dataProvider,
 //         ]);
 //     }
-
+public function test(){
+	
+	echo "ddd";
+}
     /**
      * Lists all PaiPictures models.
      *
@@ -158,12 +162,11 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionDetail($id)
+    public function actionDetail($id='6')
     {
 //     	$sql='select * from pai_pictures where
-
-    	return $this->render('detail', [
-    			'model' => $this->findModel($id)->toArray(),
+    	return $this->renderFile('@app/views/pai-pictures/detail.php', [
+    			'model' => $this->findModel($id),
     	]);
     }
 
@@ -172,8 +175,10 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionRight($id){
-    	$admin=$session->get('admin');
+    public function actionRight(){
+//     	$admin=$session->get('admin');
+    	$admin='1';
+    	$id=Yii::$app->request->get ( 'id', '0' );
     	if($admin==0){
     		//向右查看
     		$modelRight=PaiPictures::find()->where([
@@ -181,25 +186,23 @@ class PaiPicturesController extends Controller
     		])->andwhere([
     				'<',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_DESC
-    		])->limit(6)->asArray->all;
-    	}
+    		])->limit(6)->asArray()->all();
+     	}
     	elseif ($admin==1){
 
     		//向右查看
     		$modelRight=PaiPictures::find()->where([
     				'<',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_DESC
-    		])->limit(6)->asArray->all;
+    		])->limit(6)->asArray()->all();
     	}
-    	echo json_encode ( [
-    			'modelRight' => $modelRight
-    	] );
+		echo json_encode($modelRight);
     }
 
     /**
@@ -207,8 +210,10 @@ class PaiPicturesController extends Controller
      * @param string $id
      * @return mixed
      */
-    public function actionLeft($id){
-    	$admin=$session->get('admin');
+    public function actionLeft(){
+//     	$admin=$session->get('admin');
+    	$admin='1';
+    	$id=Yii::$app->request->get ( 'id', '0' );
     	if($admin==0){
 
     		//向左查看
@@ -217,26 +222,25 @@ class PaiPicturesController extends Controller
     		])->andwhere([
     				'>',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_ASC
-    		])->limit(6)->asArray->all;
+    		])->limit(6)->asArray()->all();
+
 
     	}
     	elseif ($admin==1){
 
     		//向左查看
     		$modelLeft=PaiPictures::find()->where([
-    				'>=',
+    				'>',
     				'fCreateTime',
-    				PaiPictures::findOne($id)->toArray()['fCreateTime']
+    				PaiPictures::findOne($id)['fCreateTime']
     		])->orderBy([
     				'fCreateTime'=>SORT_ASC
-    		])->limit(6)->asArray->all;
+    		])->limit(6)->asArray()->all();
     	}
-    	echo json_encode ( [
-    			'modelLeft' => $modelLeft
-    	] );
+    	echo json_encode ($modelLeft );
     }
 
     /**
@@ -258,11 +262,7 @@ class PaiPicturesController extends Controller
      */
     public function actionCreate()
     {
-
-    	$model = new PaiPictures();
-    	$utils=new UtilsModel();
-
-        $model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
+        $model = new PaiPictures();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
 
@@ -275,86 +275,11 @@ class PaiPicturesController extends Controller
     }
 
     /**
-     * Creates a new PaiPictures model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-
-    	$model = new PaiPictures();
-    	$utils=new UtilsModel();
-
-    	$model->fID= $utils->saveGetmaxNum ( 'QJDH', 11 );
-
-    	if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-    		return $this->redirect(['view', 'id' => $model->fID]);
-    	} else {
-    		return $this->render('create', [
-    				'model' => $model,
-    		]);
-    	}
-    }
-
-    /**
      * Updates an existing PaiPictures model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
      */
-    public function actionUpdate($id)
-    {
-    	$model = $this->findModel($id);
-
-    	if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-    		echo json_encode ( [
-    				'result' => 'success'
-    		] );
-
-    		//             return $this->redirect(['view', 'id' => $model->fID]);
-    	} else {
-
-    		echo json_encode ( [
-    				'result' => 'error'
-    		] );
-
-    		//             return $this->render('update', [
-    		//                 'model' => $model,
-    		//             ]);
-    	}
-    }
-
-    /**
-     * Deletes an existing PaiPictures model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-    	if( $this->findModel($id)->delete())
-    	{
-
-    		echo json_encode ( [
-    				'result' => 'success'
-    		] );
-    	}else{
-    		echo json_encode ( [
-    				'result' => 'error'
-    		] );
-    	}
-
-    	//         return $this->redirect(['index']);
-    }
-
-//     /**
-//      * Updates an existing PaiPictures model.
-//      * If update is successful, the browser will be redirected to the 'view' page.
-//      * @param string $id
-//      * @return mixed
-//      */
 //     public function actionUpdate($id)
 //     {
 //         $model = $this->findModel($id);
@@ -367,13 +292,52 @@ class PaiPicturesController extends Controller
 //             ]);
 //         }
 //     }
+    
+    /**
+     * Updates an existing PaiPictures model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionUpdate()
+    {
+    	$id=Yii::$app->request->get( 'id', '0' );
+    	$fDescription=Yii::$app->request->get ( 'fDescription');
+    	$model = PaiPictures::findOne($id);
+    	$model['fDescription']=$fDescription;
+    	if ($model->save()) {
+    		echo 'success';
+    	} else {
+    			echo 'error';
+    	}
+    }
+    
+    /**
+     * Deletes an existing PaiPictures model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelete()
+    {
+    	$id=Yii::$app->request->get ( 'id', '45' );
+    	//if( $this->findModel($id)->delete())
+    	if(PaiPictures::findOne($id)->delete())
+    	{
+    		echo  'success';
+    	}else{
+    		echo 'error';
+    	}
+    
+    	//         return $this->redirect(['index']);
+    }
 
-//     /**
-//      * Deletes an existing PaiPictures model.
-//      * If deletion is successful, the browser will be redirected to the 'index' page.
-//      * @param string $id
-//      * @return mixed
-//      */
+    /**
+     * Deletes an existing PaiPictures model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
 //     public function actionDelete($id)
 //     {
 //         $this->findModel($id)->delete();
@@ -390,7 +354,7 @@ class PaiPicturesController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = PaiPictures::findOne($id)) !== null) {
+        if (($model = PaiPictures::findOne($id)->toArray()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
