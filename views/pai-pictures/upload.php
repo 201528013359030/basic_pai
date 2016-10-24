@@ -50,7 +50,7 @@ body{padding-top:.875rem;}
 
 
 <div class="btnBox">
-	<button type="button class="button button-xs"  onclick="chooseSheetPhoto();">选择照片<span id="tip_choosephoto" style="display: none;">(上传中需等待)</span></button>
+	<button type="button" class="button"  onclick="chooseSheetPhoto();">上传图片</button>
 </div>
 
 <script>

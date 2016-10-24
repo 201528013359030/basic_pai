@@ -6,6 +6,7 @@
     Time: 15:39
 -->
 <head>
+	<?php use yii\helpers\Html;?>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"  />
 
@@ -14,45 +15,47 @@
     <link rel="stylesheet" type="text/css" href="../views/css/listcommon.css" />
     <link rel="stylesheet" type="text/css" href="../views/css/module.css" />
     <link rel="stylesheet" type="text/css" href="../views/css/public.css" />
-    <link rel="stylesheet" href="../views/css/photoswipe.css"/>
-    <link rel="stylesheet" href="../views/css/default-skin/default-skin.css"/>
+    <link rel="stylesheet" type="text/css" href="../views/css/photoswipe.css"/>
+    <link rel="stylesheet" type="text/css" href="../views/css/default-skin/default-skin.css"/>
 
 
 </head>
 <body>
-<div class="container">
+<?php foreach ($model as $mod){?>
+	<div class="container">
     <!--用户头像 预留位置-->
     <!--
     <div class="header">
        <div><img src="images/1.jpg" /></div>
     </div>
     -->
-    <?php foreach ($model as $mod){?>
-        <?=Html::beginTag('a',['class'=>'listcontain','uid'=>$uid,'href'=>''.$uid])?>
+    
+        <?= Html::beginTag('a',['class'=>'listcontain','href'=>''.$mod['fID']])?>
             <div class="listcontain">
                  <div class="demo">
                     <!--用户名and发布时间-->
                     <div class="use">
-                         <div class="usename"><span><?=Html::encode($mod['fOwner']) ?></span><em class="pub-time"><?=Html::encode($mod['fCreateTime']) ?></em></div>
+                         <div class="usename"><span><?=Html::encode($mod['fUserName']) ?></span><em class="pub-time"><?=Html::encode($mod['fCreateTime']) ?></em></div>
                     </div>
                     <!--分享的内容-->
                     <p class="fx_content"><?=Html::encode($mod['fDescription']) ?></p>
                      <!--分享的图片-->
                      <div class="my-gallery">
                      <!--   <img src="images/2.jpg" /> -->
-                         <?= Html::tag('img',['href'=>$mod['fThumb']]) ?>
+                     	<?= Html::img($mod['fThumb']);?>
                      </div>
                  </div>
             </div>
         <?=Html::endTag('a')?>
-    <?php }?>
-    <div class="row">
-        <div class="small-12 columns">
-            <button type="button" class="button expand"  onclick="chooseSheetPhoto();">选择照片</button>
-            <!-- 上传图片 -->
-        </div>
-    </div>
+	</div>
+<?php }?>
+    
+<div class="side-bar" > 
+	<a onclick="chooseSheetPhoto()"></a> 
 </div>
+    
+   
+
 
 <script src="../views/js/native.js"></script>
 <script src="../views/js/jquery.js"></script>
