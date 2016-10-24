@@ -149,10 +149,7 @@ class PaiPicturesController extends Controller {
 
 		if (! ($request->get ( 'uid' ) && $request->get ( 'auth_token' ))) {
 			$params = [
-					'name' => '18900913302
-
-
-					',
+					'name' => '18900913302',
 					'password' => '123456',
 					'api_key' => '36116967d1ab95321b89df8223929b14207b72b1'
 			];
