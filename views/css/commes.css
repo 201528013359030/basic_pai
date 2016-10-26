@@ -35,3 +35,14 @@ img{border:0; cursor:pointer;}
 .side-bar button {border-radius: 50%;width: 66px;height: 66px;display: inline-block;background-color: #ddd;margin-bottom: 2px;}
 
 
+.scroller li {
+	height:60px;
+	border-bottom: 1px solid #eee;
+	background-color: #fff;
+	font-size: 14px;
+	
+}
+
+.game-info{ padding:15px 10px; background:#FFF; line-height:22px; color:#333; font-size:14px;}
+.game-info p{color:#999; font-size:12px;}
+
