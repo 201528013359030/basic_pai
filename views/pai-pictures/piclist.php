@@ -21,6 +21,9 @@
 
 </head>
 <body onLoad=Init();>
+
+<p class="lead"><a  href="javascript:window.location.reload();"> 刷新 </a></p>
+
 	<div class="side-bar" >
 		<a onclick="chooseSheetPhoto()"></a>
 	</div>
@@ -69,7 +72,7 @@
 
 	}
 
-//获取左面数据
+//回传图片信息
 	function postData(params){
 		alert("postData");
 		var length=0;

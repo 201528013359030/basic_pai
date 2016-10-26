@@ -315,13 +315,15 @@ class PaiPicturesController extends Controller {
 	 * @return mixed
 	 */
 	public function actionRight() {
+		$session = Yii::$app->session;
+		$request = Yii::$app->request;
 		$admin = $session->get ( 'admin', '0' );
 		// $admin='1';
-		$id = Yii::$app->request->get ( 'id', '0' );
+		$id = $request->get ( 'id', '0' );
 		if ($admin == 0) {
 			// 向右查看
 			$modelRight = PaiPictures::find ()->where ( [
-					'fOwner' => WebService::getUid ()
+					'fOwner' => $session['userId']
 			] )->andwhere ( [
 					'<',
 					'fCreateTime',
@@ -352,14 +354,16 @@ class PaiPicturesController extends Controller {
 	 * @return mixed
 	 */
 	public function actionLeft() {
-		// $admin=$session->get('admin');
-		$admin = '1';
-		$id = Yii::$app->request->get ( 'id', '0' );
+		$session = Yii::$app->session;
+		$request = Yii::$app->request;
+		 $admin=$session->get('admin');
+// 		$admin = '1';
+		$id = $request->get ( 'id', '0' );
 		if ($admin == 0) {
 
 			// 向左查看
 			$modelLeft = PaiPictures::find ()->where ( [
-					'fOwner' => WebService::getUid ()
+				 'fOwner' => $session['userId']
 			] )->andwhere ( [
 					'>',
 					'fCreateTime',
@@ -408,6 +412,11 @@ class PaiPicturesController extends Controller {
 	public function actionUpload() {
 		$data = Yii::$app->request->post ( 'params' );
 
+		echo json_encode ( [
+				'success' => $success
+		] );
+		exit ();
+
 		$model = new PaiPictures ();
 		$utils = new UtilsModel ();
 
@@ -418,6 +427,9 @@ class PaiPicturesController extends Controller {
 		} else {
 			$fThumb = $data ['uploadPath'];
 		}
+
+		$success = 'service 调用失败!';
+
 
 		$model->fID = $utils->saveGetmaxNum ( 'QJDH', 11 );
 		$model->fFileName = $data ['fileName'];
@@ -446,6 +458,7 @@ class PaiPicturesController extends Controller {
 			foreach ( $userdata as $key => $arr ) {
 				$to_uids [$key] = $arr ['user_id'];
 			}
+
 
 			$url = 'http://' . $_SERVER ['HTTP_HOST'] . '/basic/web/index.php?r=pai-pictures/index&uid=&eguid=&auth_token=&lappid=';
 			$title = '有新图片上传';
