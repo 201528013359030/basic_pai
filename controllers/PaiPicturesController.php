@@ -411,12 +411,6 @@ class PaiPicturesController extends Controller {
 	 */
 	public function actionUpload() {
 		$data = Yii::$app->request->post ( 'params' );
-
-		echo json_encode ( [
-				'success' => $success
-		] );
-		exit ();
-
 		$model = new PaiPictures ();
 		$utils = new UtilsModel ();
 
@@ -428,7 +422,7 @@ class PaiPicturesController extends Controller {
 			$fThumb = $data ['uploadPath'];
 		}
 
-		$success = 'service 调用失败!';
+
 
 
 		$model->fID = $utils->saveGetmaxNum ( 'QJDH', 11 );
@@ -471,6 +465,7 @@ class PaiPicturesController extends Controller {
 						'success' => $success
 				] );
 				exit ();
+
 			}
 			if ('0' != $result->status) {
 

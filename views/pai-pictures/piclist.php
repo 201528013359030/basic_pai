@@ -19,10 +19,13 @@
     <link rel="stylesheet" type="text/css" href="../views/css/default-skin/default-skin.css"/>
 	<link rel="stylesheet" type="text/css" href="../views/css/reset.css"/>
 
+<script src="../views/js/native.js"></script>
+<script src="../views/js/jquery.js"></script>
+<script src="../views/js/foundation.min.js"></script>
 </head>
 <body onLoad=Init();>
 
-<p class="lead"><a  href="javascript:window.location.reload();"> 刷新 </a></p>
+<!-- <p class="lead"><a  href="javascript:window.location.reload();"> 刷新 </a></p> -->
 
 	<div class="side-bar" >
 		<a onclick="chooseSheetPhoto()"></a>
@@ -45,7 +48,7 @@
 			params = datas.result.params;
 			if(status==0){
 				var str_para = JSON.stringify(params);
-				alert("upload回调函数OnUploadCb:"+str_para+"status:"+status);
+// 				alert("upload回调函数OnUploadCb:"+str_para+"status:"+status);
 
 				var setting = {
 				"uploadUrl":"https://192.168.139.160:443/media_file/",
@@ -65,7 +68,7 @@
 			var transferStatus = params.transferStatus;
 			if(transferStatus=="Success"){
 				var str_para = JSON.stringify(params);
-				alert("OnUploadGivenFileCb 图片已上传:"+str_para);
+// 				alert("OnUploadGivenFileCb 图片已上传:"+str_para);
 				postData(params);
 			}
 		}
@@ -74,9 +77,8 @@
 
 //回传图片信息
 	function postData(params){
-		alert("postData");
 		var length=0;
-		$.ajax({
+		$jq.ajax({
 			type:'POST',
 			url:'index.php?r=pai-pictures/upload',
 			async:'false',
@@ -86,7 +88,7 @@
 				alert('error');
 			},
 	   		success:function(datas){
-		 		alert(JSON.stringify(datas));
+// 		 		alert(JSON.stringify(datas));
 		   		location.reload();
 	   		},
 	 		complete:function(){}
@@ -94,9 +96,7 @@
 	}
 </script>
 
-<script src="../views/js/native.js"></script>
-<script src="../views/js/jquery.js"></script>
-<script src="../views/js/foundation.min.js"></script>
+
 
 <script>
 //初始化fundation
