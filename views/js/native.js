@@ -366,7 +366,6 @@ API.init();
 		 * 选择表示上拉菜单/弹出框选择
 		 */
 		chooseSheetPhoto:function(parameter){
-			alert("222");
 			var op_photo = {
 				"name": "ChoosePhoto", 
 		        "callback": parameter.callback||"OnChoosePhotoCb", 

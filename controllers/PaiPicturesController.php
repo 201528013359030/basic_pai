@@ -224,7 +224,7 @@ class PaiPicturesController extends Controller {
 // 			] )->asArray ()->all ();
 // 		}
 
-		return $this->renderFile ( '@app/views/pai-pictures/picList.php', [
+		return $this->renderFile ( '@app/views/pai-pictures/piclist.php', [
 // 				'model' => $model,
 				'pageSize' => $pageSize,
 				'total' => $total,
@@ -394,7 +394,7 @@ class PaiPicturesController extends Controller {
 				'model' => $this->findModel ( $id )
 		] );
 	}
-	public function actionUpload() {
+	public function actionUploadtest() {
 		return $this->renderFile ( '@app/views/pai-pictures/upload.php' );
 	}
 
@@ -405,7 +405,7 @@ class PaiPicturesController extends Controller {
 	 * @param string $id
 	 * @return mixed
 	 */
-	public function actionCreate() {
+	public function actionUpload() {
 		$data = Yii::$app->request->post ( 'params' );
 
 		$model = new PaiPictures ();

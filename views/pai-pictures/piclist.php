@@ -18,11 +18,11 @@
     <link rel="stylesheet" type="text/css" href="../views/css/photoswipe.css"/>
     <link rel="stylesheet" type="text/css" href="../views/css/default-skin/default-skin.css"/>
 	<link rel="stylesheet" type="text/css" href="../views/css/reset.css"/>
-	
+
 </head>
 <body onLoad=Init();>
-	<div class="side-bar" > 
-		<a onclick="chooseSheetPhoto()"></a> 
+	<div class="side-bar" >
+		<a onclick="chooseSheetPhoto()"></a>
 	</div>
 		<div class="list-group"></div>
 
@@ -30,7 +30,7 @@
 			<span class="pullUpIcon"></span><span class="pullUpLabel">点击加载更多...</span>
 			<li class="list"></li>
 		</div>
-	
+
 
 <script>
 	function chooseSheetPhoto(){
@@ -71,10 +71,11 @@
 
 //获取左面数据
 	function postData(params){
+		alert("postData");
 		var length=0;
 		$.ajax({
 			type:'POST',
-			url:'index.php?r=pai-pictures/create',
+			url:'index.php?r=pai-pictures/upload',
 			async:'false',
 			data:{'params':params},
 			dataType:'json',
@@ -128,7 +129,7 @@
 		else{
 			$jq(".pullUpLabel").html("没有更多数据了...");
 		}
-		
+
 	}
 
 	function getnewData(page){
