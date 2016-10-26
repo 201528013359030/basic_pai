@@ -17,49 +17,33 @@
     <link rel="stylesheet" type="text/css" href="../views/css/public.css" />
     <link rel="stylesheet" type="text/css" href="../views/css/photoswipe.css"/>
     <link rel="stylesheet" type="text/css" href="../views/css/default-skin/default-skin.css"/>
-	<script src="../views/js/native.js"></script>
-	<script src="../views/js/jquery.js"></script>
-	<script src="../views/js/foundation.min.js"></script>
-
-
+	<link rel="stylesheet" type="text/css" href="../views/css/reset.css"/>
+	
 </head>
 <body onLoad=Init();>
-	<div class="off-canvas-wrap" data-offcanvas>
-		<div class="inner-wrap">
-			<div id="scrollwrap">
-				<div id="scroller">
-					<div class="tabs-content">
-						<div class="content active" id="panel1">
-							<div class="list-group"></div>
-						</div>
-					</div>
-					<!--tabs-content-->
-					<div id="pullUp" onclick=getData();>
-						<span class="pullUpIcon"></span><span class="pullUpLabel">点击加载更多...</span>
-						<li class="list"></li>
-					</div>
-				</div>
-				<!--end scroller-->
-			</div>
-		</div>
-	</div>
 	<div class="side-bar" > 
 		<a onclick="chooseSheetPhoto()"></a> 
 	</div>
+		<div class="list-group"></div>
+
+		<div id="pullUp" onclick=getData();>
+			<span class="pullUpIcon"></span><span class="pullUpLabel">点击加载更多...</span>
+			<li class="list"></li>
+		</div>
+	
 
 <script>
 	function chooseSheetPhoto(){
 		var transferid = parseInt(new Date().getTime()/1000);
-		NativeInteractive.chooseSheetPhoto({"webAppTransferID":transferid,"editType":1});
+		NativeInteractive.chooseSheetPhoto({"webAppTransferID":transferid,"editType":0});
 	}
 	function OnChoosePhotoCb(datas){
 		var status = datas.result.status,
 			params = datas.result.params;
 			if(status==0){
 				var str_para = JSON.stringify(params);
-			//	alert("upload回调函数OnUploadCb:"+str_para+"status:"+status);
+				alert("upload回调函数OnUploadCb:"+str_para+"status:"+status);
 
-				document.getElementById("tip_choosephoto").style.display = "inline-block";
 				var setting = {
 				"uploadUrl":"https://192.168.139.160:443/media_file/",
 				"fileID":params.fileID,
@@ -77,12 +61,12 @@
 		if(params){
 			var transferStatus = params.transferStatus;
 			if(transferStatus=="Success"){
-				document.getElementById("tip_choosephoto").style.display = "none";
 				var str_para = JSON.stringify(params);
-			//	alert("OnUploadGivenFileCb 图片已上传:"+str_para);
+				alert("OnUploadGivenFileCb 图片已上传:"+str_para);
 				postData(params);
 			}
 		}
+
 	}
 
 //获取左面数据
@@ -106,6 +90,10 @@
 	}
 </script>
 
+<script src="../views/js/native.js"></script>
+<script src="../views/js/jquery.js"></script>
+<script src="../views/js/foundation.min.js"></script>
+
 <script>
 //初始化fundation
 	$(document).foundation();
@@ -113,12 +101,11 @@
 <script>
 	var $jq = jQuery.noConflict();
 	var CurPage = 1; //当前页码
-	var Total,PageSize,TotalPage;
+	var PageSize,TotalPage;
 	var Page=2;
 	var curTime="";
 	var index=0;
 	function Init(){
-		Total = <?=$Total?>; //总记录数
     	PageSize = <?=$pageSize?>; //每页显示条数
     	CurPage = 1; //当前页
     	TotalPage = <?=$totalPage?>; //总页数
@@ -147,14 +134,14 @@
 	function getnewData(page){
 		$jq.ajax({
 	        type: 'GET',
-	        url: 'index.php?r=pai-pictures/loadMore',
-	        data: {'page':page-1,'pageSize':PageSize},
+	        url: 'index.php?r=pai-pictures/loadmore',
+	        data: {'page':page-1},
 	        dataType:'json',
 	        afterSend:function(){
         	   $(".pullUpLabel").html("loading...");
 	        },
 	        success:function(json){
-				dataApproval=json.dataApproval;
+				dataApproval=json.data;
             	if(dataApproval!=null&&dataApproval.length>0){
             		setView(dataApproval);
             	}
@@ -174,29 +161,33 @@
 	function setView(dataList){
 		var view="";
 		$jq.each(dataList,function(index,data){
-			view+="<a class='listIteam' href=''>";
-			view+="<i class='icon ic_shi'>事</i>";
-			view +="<i class='ficon icon-angle-right'></i>";
-			view+="<p class='info clearfix'>";
-			view+="<span class='fl name'>";
-			view +=data['days'];
-			view +="天</span>";
-			view +="<span class='fr status'>";
-			view+="<em class='fc_sucess'>审批中</em>";
-			view +="</span>";
-			view +="</p>";
-			view +="<p class='info clearfix'>";
-			view +="<span class='fl summary textCut'>";
-			view+=data['reason'];
+			view+="<div class='container'>";
+			view+="<a class='listcontain' href='index.php?r=pai-pictures/detail&id="+data['fID']+"'>";
+			view+="<div class='listcontain'>";
+			view+="<li class='demo'>";
+			view+="<div class='use'>";
+			view+="<div class='usename'>";
+			view+="<span>";
+			view+=data['fUserName'];
+			view+="<em class='pubtime'>";
+			view+=data['fCreateTime'];
+			view+="</em>";
 			view+="</span>";
-			view+="<span class='fr date'>";
-			view+=data['applyTime'];
-			view+="</span>";
+			view+="</div>";
+			view+="</div>";
+			view+="<p class='fx_content'>";
+			view+=data['fDescription'];
 			view+="</p>";
+			view+="<div class='my-gallery'>";
+			view+="<img src='"+data['fThumb']+"'/>";
+			view+="</div>";
+			view+="</li>";
+			view+="</div>";
 			view+="</a>";
+			view+="</div>";
 
 			});
-		$jq("#panel1 .list-group").append(view);
+		$jq(".list-group").append(view);
 }
 </script>
 
