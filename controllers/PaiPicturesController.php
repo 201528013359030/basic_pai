@@ -58,9 +58,11 @@ class PaiPicturesController extends Controller {
 	// ]);
 	// }
 	public function actionTest() {
-		$web =new WebService();
-		$result = $web->getApps();
-		print_r($result);
+// 		$web =new WebService();
+// 		$result = $web->getApps();
+// 		print_r($result);
+
+		return $this->renderFile('@app/views/pai-pictures/refresh.php');
 
 	}
 
@@ -222,13 +224,13 @@ class PaiPicturesController extends Controller {
 // 			] )->asArray ()->all ();
 // 		}
 
-		return $this->renderFile ( '@app/views/pai-pictures/pickList.php', [
+		return $this->renderFile ( '@app/views/pai-pictures/picList.php', [
 // 				'model' => $model,
 				'pageSize' => $pageSize,
 				'total' => $total,
 				'totalPage' => $totalPage,
-				'data' =>  $data,
-// 				'data' => json_encode ( $dataBill ),
+// 				'data' =>  $data,
+				'data' => json_encode ( $data ),
 
 		] );
 	}
