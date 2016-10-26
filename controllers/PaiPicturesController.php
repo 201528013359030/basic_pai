@@ -58,44 +58,10 @@ class PaiPicturesController extends Controller {
 	// ]);
 	// }
 	public function actionTest() {
+		$web =new WebService();
+		$result = $web->getApps();
+		print_r($result);
 
-
-		$success = '';
-		$to_uids = '';
-		$userdata = PaiUser::find ()->where ( [
-				'admin' => '1'
-		] )->andWhere ( [
-				'not in',
-				'user_id',
-				Yii::$app->session->get ('userId')
-		] )->asArray ()->all ();
-
-		foreach ( $userdata as $key => $arr ) {
-			$to_uids [$key] = $arr ['user_id'];
-		}
-
-		$url = 'http://' . $_SERVER ['HTTP_HOST'] . '/basic/web/index.php?r=pai-pictures/index&uid=&eguid=&auth_token=&lappid=';
-		$title = '有新图片上传';
-
-		$result = $web->sendNotice ($to_uids, $title, $url );
-
-		echo json_encode ( [
-				'success' => $to_uids,
-				'url'=>$url
-		] );
-		exit ();
-
-
-		$model = PaiUser::find ( 'user_id' )->where ( [
-				'admin' => '1'
-		] )->andWhere ( [
-				'not in',
-				'user_id',
-				'5@15'
-		] )->asArray ()->all ();
-		print_r ( $model );
-
-		echo $model [0] ['user_id'];
 	}
 
 	/**
@@ -211,26 +177,119 @@ class PaiPicturesController extends Controller {
 
 		$session ['userName'] = $user->user_name;
 		$session ['admin'] = $user->admin;
+		$session['pageSize'] = 8;
+		date_default_timezone_set ( 'PRC' );
+		$pageSize = $session['pageSize'];
+// 		curTime = date ( 'Y-m-d H:i:s' );
 
 		if ($user->admin == 0) {
 
 			// 普通用户身份
-			$model = PaiPictures::find ()->where ( [
+// 			$searchModel = new LeavebillSearch ();
+			$total = PaiPictures::find ()->where ( [
 					'fowner' => $uid
-			] )->limit ( 3 )->orderBy ( [
+			] )->count ();
+			$totalPage = ceil ( $Total / $pageSize );
+
+			$data = PaiPictures::find ()->where ( [
+					'fowner' => $uid
+			] )->orderBy ( [
 					'fCreateTime' => SORT_DESC
-			] )->asArray ()->all ();
+			] )->offset ( 0 )->limit ( $pageSize )->asArray ()->all ();
+
+// 			$model = PaiPictures::find ()->where ( [
+// 					'fowner' => $uid
+// 			] )->limit ( 3 )->orderBy ( [
+// 					'fCreateTime' => SORT_DESC
+// 			] )->asArray ()->all ();
 		} elseif ($user->admin == 1) {
 
 			// 管理员身份
-			$model = PaiPictures::find ()->orderBy ( [
+// 			$searchModel = new LeavebillSearch ();
+			$total = PaiPictures::find ()->orderBy ( [
 					'fCreateTime' => SORT_DESC
-			] )->asArray ()->all ();
+			] )->count ();
+			$totalPage = ceil ( $total / $pageSize );
+
+			$data = PaiPictures::find ()->orderBy ( [
+					'fCreateTime' => SORT_DESC
+			] )->offset ( 0 )->limit ( $pageSize )->asArray ()->all ();
 		}
 
+			// 管理员身份
+// 			$model = PaiPictures::find ()->orderBy ( [
+// 					'fCreateTime' => SORT_DESC
+// 			] )->asArray ()->all ();
+// 		}
+
 		return $this->renderFile ( '@app/views/pai-pictures/upload.php', [
-				'model' => $model
+// 				'model' => $model,
+				'pageSize' => $pageSize,
+				'total' => $total,
+				'totalPage' => $totalPage,
+				'data' =>  $data,
+// 				'data' => json_encode ( $dataBill ),
+
 		] );
+	}
+
+	/**
+	 *@abstract loadmore PaiPictures data
+	 *
+	 *@author fyq
+	 *@return json data
+	 */
+	public function actionLoadmore(){
+
+		$request = Yii::$app->request;
+		$session = Yii::$app->session;
+		$page = $request->get('page','0');
+		$pageSize = $session['pageSize'];
+		date_default_timezone_set ( 'PRC' );
+// 		$curTime = date ( 'Y-m-d H:i:s' );
+
+		if ($session ['admin'] == 0) {
+
+			// 普通用户身份
+
+
+
+			// 			$searchModel = new LeavebillSearch ();
+			$total = PaiPictures::find ()->where ( [
+					'fowner' => $uid
+			] )->count ();
+			$totalPage = ceil ( $Total / $pageSize );
+
+			$data = PaiPictures::find ()->where ( [
+					'fowner' => $uid
+			] )->orderBy ( [
+					'fCreateTime' => SORT_DESC
+			] )->offset ($page*$pageSize )->limit ( $pageSize )->asArray ()->all ();
+
+
+
+			// 			$model = PaiPictures::find ()->where ( [
+			// 					'fowner' => $uid
+			// 			] )->limit ( 3 )->orderBy ( [
+			// 					'fCreateTime' => SORT_DESC
+			// 			] )->asArray ()->all ();
+		} elseif ($session ['admin'] == 1) {
+
+			// 管理员身份
+			$total = PaiPictures::find ()->orderBy ( [
+					'fCreateTime' => SORT_DESC
+			] )->count ();
+			$totalPage = ceil ( $total / $pageSize );
+
+			$data = PaiPictures::find ()->orderBy ( [
+					'fCreateTime' => SORT_DESC
+			] )->offset ( $page*$pageSize )->limit ( $pageSize )->asArray ()->all ();
+		}
+
+		echo json_encode ( [
+				'data' => $data
+		] );
+
 	}
 
 	/**
