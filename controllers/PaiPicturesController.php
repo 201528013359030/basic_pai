@@ -222,7 +222,7 @@ class PaiPicturesController extends Controller {
 // 			] )->asArray ()->all ();
 // 		}
 
-		return $this->renderFile ( '@app/views/pai-pictures/upload.php', [
+		return $this->renderFile ( '@app/views/pai-pictures/pickList.php', [
 // 				'model' => $model,
 				'pageSize' => $pageSize,
 				'total' => $total,
