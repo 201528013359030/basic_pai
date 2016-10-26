@@ -68,8 +68,7 @@ var refresher = {
 					);
 	},
 	onScrolling: function(e, pullDownEle, pullUpEle, pullUpOffset) {
-//		if (e.y > -(pullUpOffset)&&!pullDownEle.className.match('loading')) {
-		if(e.y > -(pullUpOffset)&&!pullDownEle.className.match('loading')&&!pullUpEle.className.match('loading')) {
+        if(e.y > -(pullUpOffset)&&!pullDownEle.className.match('loading')&&!pullUpEle.className.match('loading')) {
 			pullDownEle.classList.remove("flip");
 			pullDownEle.querySelector('.pullDownLabel').innerHTML = refresher.info.pullDownLable;
 			pullDownEle.querySelector('.pullDownIcon').style.display = "block";
