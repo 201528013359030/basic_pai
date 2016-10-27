@@ -17,20 +17,22 @@
     <link rel="stylesheet" type="text/css" href="../views/css/public.css" />
     <link rel="stylesheet" type="text/css" href="../views/css/photoswipe.css"/>
     <link rel="stylesheet" type="text/css" href="../views/css/default-skin/default-skin.css"/>
-	<link rel="stylesheet" type="text/css" href="../views/css/reset.css"/>
+	<link rel="stylesheet" href="../views/css/reset.css"/>
+    <link rel="stylesheet" href="../views/css/pullToRefresh.css"/>
 	
 </head>
 <body onLoad=Init();>
 	<div class="side-bar" > 
 		<a onclick="chooseSheetPhoto()"></a> 
 	</div>
-		<div class="list-group"></div>
 
-		<div id="pullUp" onclick=getData();>
+		<ul class="list-group"></ul>
+
+<!--		<div id="pullUp" onclick=getData();>
 			<span class="pullUpIcon"></span><span class="pullUpLabel">点击加载更多...</span>
 			<li class="list"></li>
 		</div>
-	
+-->	
 
 <script>
 	function chooseSheetPhoto(){
@@ -72,7 +74,7 @@
 //获取左面数据
 	function postData(params){
 		var length=0;
-		$.ajax({
+		$jq.ajax({
 			type:'POST',
 			url:'index.php?r=pai-pictures/create',
 			async:'false',
@@ -90,13 +92,15 @@
 	}
 </script>
 
+<script src="../views/js/jquery-1.9.1.min.js"></script>
 <script src="../views/js/native.js"></script>
-<script src="../views/js/jquery.js"></script>
 <script src="../views/js/foundation.min.js"></script>
+
 
 <script>
 //初始化fundation
 	$(document).foundation();
+	
 </script>
 <script>
 	var $jq = jQuery.noConflict();
@@ -105,6 +109,8 @@
 	var Page=2;
 	var curTime="";
 	var index=0;
+	var isloading = false;
+
 	function Init(){
     	PageSize = <?=$pageSize?>; //每页显示条数
     	CurPage = 1; //当前页
@@ -148,6 +154,7 @@
             	else{
             		$jq(".pullUpLabel").html("没有更多数据了...");
             	}
+				isloading = false;
         	},
         	complete:function(){ //生成分页条
         	},
@@ -161,10 +168,10 @@
 	function setView(dataList){
 		var view="";
 		$jq.each(dataList,function(index,data){
-			view+="<div class='container'>";
+			view+="<li class='container'>";
 			view+="<a class='listcontain' href='index.php?r=pai-pictures/detail&id="+data['fID']+"'>";
 			view+="<div class='listcontain'>";
-			view+="<li class='demo'>";
+			view+="<div class='demo'>";
 			view+="<div class='use'>";
 			view+="<div class='usename'>";
 			view+="<span>";
@@ -181,15 +188,27 @@
 			view+="<div class='my-gallery'>";
 			view+="<img src='"+data['fThumb']+"'/>";
 			view+="</div>";
-			view+="</li>";
+			view+="</div>";
 			view+="</div>";
 			view+="</a>";
-			view+="</div>";
+			view+="</li>";
 
 			});
 		$jq(".list-group").append(view);
 }
 </script>
+<script>
 
+$jq(function(){  
+	$jq(window).scroll(function() {  
+      //当内容滚动到底部时加载新的内容  
+     	 if ($jq(this).scrollTop() + $jq(window).height() + 20 >= $jq(document).height() && $jq(this).scrollTop() > 20) {  
+          //当前要加载的页码  
+          getData();  
+     	 }  
+ 	 }); 
+  });   
+
+</script>
 </body>
 </html>
