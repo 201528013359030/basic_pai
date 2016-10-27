@@ -185,12 +185,12 @@ class PaiPicturesController extends Controller {
 			// 普通用户身份
 // 			$searchModel = new LeavebillSearch ();
 			$total = PaiPictures::find ()->where ( [
-					'fowner' => $uid
+					'fOwner' => $uid
 			] )->count ();
 			$totalPage = ceil ( $total / $pageSize );
 
 			$data = PaiPictures::find ()->where ( [
-					'fowner' => $uid
+					'fOwner' => $uid
 			] )->orderBy ( [
 					'fCreateTime' => SORT_DESC
 			] )->offset ( 0 )->limit ( $pageSize )->asArray ()->all ();
@@ -241,6 +241,7 @@ class PaiPicturesController extends Controller {
 
 		$request = Yii::$app->request;
 		$session = Yii::$app->session;
+		$uid =$session ['userId'];
 		$page = $request->get('page','0');
 		$pageSize = $session['pageSize']/2;
 		date_default_timezone_set ( 'PRC' );
@@ -250,16 +251,8 @@ class PaiPicturesController extends Controller {
 
 			// 普通用户身份
 
-
-
-			// 			$searchModel = new LeavebillSearch ();
-			$total = PaiPictures::find ()->where ( [
-					'fowner' => $uid
-			] )->count ();
-			$totalPage = ceil ( $Total / $pageSize );
-
 			$data = PaiPictures::find ()->where ( [
-					'fowner' => $uid
+					'fOwner' => $uid
 			] )->orderBy ( [
 					'fCreateTime' => SORT_DESC
 			] )->offset ($page*$pageSize )->limit ( $pageSize )->asArray ()->all ();

@@ -73,7 +73,7 @@
 //回传图片信息
 	function postData(params){
 		var length=0;
-		$.ajax({
+		$jq.ajax({
 			type:'POST',
 			url:'index.php?r=pai-pictures/upload',
 			async:'false',
@@ -191,6 +191,20 @@
 		$jq(".list-group").append(view);
 }
 </script>
+
+<script>
+
+ $jq(function(){
+ 	$jq(window).scroll(function() {
+       //当内容滚动到底部时加载新的内容
+      	 if ($jq(this).scrollTop() + $jq(window).height() + 20 >= $jq(document).height() && $jq(this).scrollTop() > 20) {
+           //当前要加载的页码
+           getData();
+      	 }
+  	 });
+   });
+
+ </script>
 
 </body>
 </html>
