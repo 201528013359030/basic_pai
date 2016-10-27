@@ -103,7 +103,7 @@ function postData(params){
 	var length=0;
 	$.ajax({
 		type:'POST',
-		url:'index.php?r=pai-pictures/create',
+		url:'index.php?r=pai-pictures/upload',
 		async:'false',
 		data:{'params':params},
 		dataType:'json',

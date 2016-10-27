@@ -17,13 +17,24 @@
     <link rel="stylesheet" type="text/css" href="../views/css/public.css" />
     <link rel="stylesheet" type="text/css" href="../views/css/photoswipe.css"/>
     <link rel="stylesheet" type="text/css" href="../views/css/default-skin/default-skin.css"/>
+<<<<<<< HEAD
 	<link rel="stylesheet" href="../views/css/reset.css"/>
     <link rel="stylesheet" href="../views/css/pullToRefresh.css"/>
 	
+=======
+	<link rel="stylesheet" type="text/css" href="../views/css/reset.css"/>
+
+<script src="../views/js/native.js"></script>
+<script src="../views/js/jquery.js"></script>
+<script src="../views/js/foundation.min.js"></script>
+>>>>>>> origin/master
 </head>
 <body onLoad=Init();>
-	<div class="side-bar" > 
-		<a onclick="chooseSheetPhoto()"></a> 
+
+<!-- <p class="lead"><a  href="javascript:window.location.reload();"> 刷新 </a></p> -->
+
+	<div class="side-bar" >
+		<a onclick="chooseSheetPhoto()"></a>
 	</div>
 
 		<ul class="list-group"></ul>
@@ -32,7 +43,11 @@
 			<span class="pullUpIcon"></span><span class="pullUpLabel">点击加载更多...</span>
 			<li class="list"></li>
 		</div>
+<<<<<<< HEAD
 -->	
+=======
+
+>>>>>>> origin/master
 
 <script>
 	function chooseSheetPhoto(){
@@ -44,7 +59,7 @@
 			params = datas.result.params;
 			if(status==0){
 				var str_para = JSON.stringify(params);
-				alert("upload回调函数OnUploadCb:"+str_para+"status:"+status);
+// 				alert("upload回调函数OnUploadCb:"+str_para+"status:"+status);
 
 				var setting = {
 				"uploadUrl":"https://192.168.139.160:443/media_file/",
@@ -64,19 +79,19 @@
 			var transferStatus = params.transferStatus;
 			if(transferStatus=="Success"){
 				var str_para = JSON.stringify(params);
-				alert("OnUploadGivenFileCb 图片已上传:"+str_para);
+// 				alert("OnUploadGivenFileCb 图片已上传:"+str_para);
 				postData(params);
 			}
 		}
 
 	}
 
-//获取左面数据
+//回传图片信息
 	function postData(params){
 		var length=0;
 		$jq.ajax({
 			type:'POST',
-			url:'index.php?r=pai-pictures/create',
+			url:'index.php?r=pai-pictures/upload',
 			async:'false',
 			data:{'params':params},
 			dataType:'json',
@@ -84,7 +99,7 @@
 				alert('error');
 			},
 	   		success:function(datas){
-		 		alert(JSON.stringify(datas));
+// 		 		alert(JSON.stringify(datas));
 		   		location.reload();
 	   		},
 	 		complete:function(){}
@@ -92,9 +107,13 @@
 	}
 </script>
 
+<<<<<<< HEAD
 <script src="../views/js/jquery-1.9.1.min.js"></script>
 <script src="../views/js/native.js"></script>
 <script src="../views/js/foundation.min.js"></script>
+=======
+
+>>>>>>> origin/master
 
 
 <script>
@@ -134,7 +153,7 @@
 		else{
 			$jq(".pullUpLabel").html("没有更多数据了...");
 		}
-		
+
 	}
 
 	function getnewData(page){

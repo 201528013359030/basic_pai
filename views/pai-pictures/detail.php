@@ -117,16 +117,31 @@ input:focus {
 				<!-- 					<img src="../views/image/3.jpg" alt="Flower2"> -->
 				<!-- 					</a> -->
 				<!-- 				</div> -->
+
 			</div>
+			<!--  添加begin-->
+			<div class="modal fade text-center" id="bigImage" role="dialog">
+				<div class="modal-dialog"
+					style="display: block; width: 100%; padding: 0; margin: 0">
+					<!-- 								<div class="modal-content"> -->
+					<!-- 								</div> -->
+					<div class="modal-body" style="margin: 0; padding: 0">
+						<img src="" style="width: 100%; height: auto">
+					</div>
+				</div>
+			</div>
+			<!--  添加end-->
 
 			<!-- Left and right controls -->
 			<!-- data-slide="prev" data-slide="next" -->
-			<a class="left carousel-control prev-slide" href="#myCarousel"
-				role="button"> <span class="glyphicon glyphicon-chevron-left"
-				aria-hidden="true"></span> <span class="sr-only">Previous</span>
-			</a> <a class="right carousel-control next-slide" href="#myCarousel"
-				role="button"> <span class="glyphicon glyphicon-chevron-right"
-				aria-hidden="true"></span> <span class="sr-only">Next</span>
+			<a class="left carousel-control prev-slide" id="left"
+				href="#myCarousel" role="button"> <span
+				class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+				<span class="sr-only">Previous</span>
+			</a> <a class="right carousel-control next-slide" id="right"
+				href="#myCarousel" role="button"> <span
+				class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+				<span class="sr-only">Next</span>
 			</a>
 		</div>
 		<div class='panel panel-default'>
@@ -149,7 +164,7 @@ input:focus {
 							<input placeholder="请输入描述信息" class='fDescription' type='text' />
 						</div>
 						<div class='col-xs-2 col-sm-2'>
-							<button class='button btn-primary '>保存</button>
+							<button class='button btn-primary ' id="save">保存</button>
 						</div>
 					</div>
 				</div>
@@ -191,20 +206,39 @@ input:focus {
 						}else{
 							view +='<div class="item" id="'+list[i]['fID']+'">';
 						}
-				view+='<img src="'+list[0]['fPreviewPath']+'" alt="'+list[i]['fFileName']+'">';
+					//添加begin
+						view += '<a  data-toggle="modal" href="#bigImage" id="link">';
+					//end
+				view+='<img src="'+list[i]['fPreviewPath']+'" alt="'+list[i]['fFileName']+'">';
+				//添加begin
+					view += '</a>';
+				//end
 				view+='</div>';
+				<!--  添加begin-->
+// 				view += '<div class="modal fade text-center" id="'+list[i]['fID']+'" role="dialog">';
+// 				view +='<div class="modal-dialog" style="display: block; width:100%;padding:0;margin:0">';
+// 				view +='<div class="modal-body" style="margin:0;padding:0">';
+// 				view +='<img src="'+list[i]['fPreviewPath']+'" style="width:100%;height:auto">';
+// 				view +='</div>';
+// 				view +='</div>';
+// 				view +='</div>'
+				<!--  添加end-->
+
 				}
 				if(flag=='right'){
 					$jq('.carousel-inner').append(view);
+				
 				}else if(flag=='left'){
 					$jq('.carousel-inner').prepend(view);
 				}
+				//console.log($jq('.carousel-inner'));
 				if(detailList.length==1){
 					$jq('.fOwner').text(detailList[0]['fOwner']);
 					//if(detailList[0]['fDescription']!=''){
 						$jq('.fDescription').val(detailList[0]['fDescription']);
 					//}
-					$jq('.fCreateTime').text(detailList[0]['fCreateTime']);			
+					$jq('.fCreateTime').text(detailList[0]['fCreateTime']);		
+					$jq('.modal-body img').attr("src",detailList[0]['fPreviewPath']);	
 					}
 			}			
 
@@ -222,11 +256,15 @@ input:focus {
 
 			//点击上一张图片
 			$jq('.prev-slide').click(function(){
+// 				console.log("================"+index);
+// 				console.log(detailList[index]['fID']);
 				if(index<=0){
 	 				getLeftData(detailList[0]['fID']);
 	 			}else{
 	 				//console.log(index);
+
 	 				$jq('#myCarousel').carousel(--index);
+	 				//console.log("begin:"+index);
 	 				
 		 			}
 	 			if(index<detailList.length){
@@ -252,13 +290,22 @@ input:focus {
 						},
 				   success:function(datas){
 							length=datas.length;
+							console.log(datas);
+							datas.reverse();
+							console.log(datas);
 							if(datas.length==0){
 									//$jq.alert("没有数据了..");
 									$jq('.left').hide();										
 							}
-							for(var i=0;i<datas.length;i++){
+							for(var i=datas.length-1;i>=0;i--){
 								detailList.unshift(datas[i]);
 								}
+// 							for(var i=0;i<datas.length;i++){
+// 								detailList.unshift(datas[i]);
+// 								}
+// 							console.log('begin');
+// 							console.log(detailList);
+// 							console.log('end');
 							//console.log(detailList.length);
 							setView(datas,'left');
 							if(length>0){
@@ -298,6 +345,7 @@ input:focus {
 						setView(datas,'right');
 						if(length>0){
 							index=index+1;
+							//console.log("now"+index);
 							$jq('#myCarousel').carousel(index);
 						}
 						},
@@ -306,17 +354,84 @@ input:focus {
 				});
 
 			}
+		// 双击图片隐藏大图片		
+	 var touchtime = new Date().getTime();    
+    $jq(".modal img").on("click", function(){
+        if( new Date().getTime() - touchtime < 500 ){
+        	$jq('.modal').modal('hide');
+           // console.log("dblclick");
+        }else{
+            touchtime = new Date().getTime();
+            //console.log("click")
+        }
+    });
+		
+	//图片放大缩小
+// 	        $jq('#bigImage').each(function () {
+//                  new RTP.PinchZoom($jq(this), {                     
+//                              maxZoom:2,              
+//                   });
+//             });
+		
+		//
+// 		$jq('.modal img').dblclick(function(){
+// 				$jq('.modal').modal('hide');
+// 			});
+// 		$jq('#link').click(function(e){
+// 		//	e.prevent();
+// 			alert("dd");
+// 			console.log(detailList[index]['fPreviewPath']);
+// 			$jq('.modal-body img').attr("src",detailList[index]['fPreviewPath']);
+// 		});
+			//放大缩小图片  modal
+// 			$jq('.modal').on('show.bs.modal',function(){
+				
+// 			})
+			//	new RTP.PinchZoom($jq('.modal'));
+				//console.log($jq('.modal img'));
+//             $jq('.modal').each(function () {
+//                 new RTP.PinchZoom($jq(this), {
+//                              maxZoom:2,
+//                         });
+//              });
+		//		new RTP.PinchZoom($jq('.modal'));
+// 			$jq("#link").click(function(e){
+// 				//alert("ddd");
+// 				console.log($jq('.modal'));
+// 				console.log($jq('.modal').hasClass('in'));
+// 				if(!$jq('.modal').hasClass('in')){
+// 					// $jq('.carousel-inner').each(function () {
+// 					//alert("ddd");
+// // 		                new RTP.PinchZoom($jq(".modal"), {
+// // 		                            maxZoom:2,
+// // 		                        });
+// 		             $jq('.modal').each(function () {
+// 			             console.log($jq(this));
+// 			             console.log($jq('.modal').hasClass('in'));
+// // 		                 new RTP.PinchZoom($jq(this), {
+// // 		                             maxZoom:2,
+// // 		                         });
+// 	             });
+// 					 }
+// 				});
 
-			//放大缩小图片
-            $jq('.carousel-inner').each(function () {
-                new RTP.PinchZoom($jq(this), {
-                            maxZoom:2,
-                        });
-            });
 
+// 			if($jq('.modal').hasClass('in')){
+// 			// $jq('.carousel-inner').each(function () {
+// 			alert("ddd");
+//                 new RTP.PinchZoom($jq(".modal"), {
+//                             maxZoom:2,
+//                         });
+// //             $jq('.carousel-inner').each(function () {
+// //                 new RTP.PinchZoom($jq(this), {
+// //                             maxZoom:2,
+// //                         });
+// //             });
+// 			 }
 			//显示图片详细信息
 			$jq('#myCarousel').on('slide.bs.carousel',function(){
-				console.log(index);
+				console.log("end:"+index);
+				$jq('.modal-body img').attr("src",detailList[index]['fPreviewPath']);
 				$jq('.fOwner').text(detailList[index]['fOwner']);
 				$jq('.fDescription').val(detailList[index]['fDescription']);
 				$jq('.fCreateTime').text(detailList[index]['fCreateTime']);			
@@ -461,7 +576,7 @@ input:focus {
 										}else if(index==detailList.length&&index>0){
 											$jq('.item').eq(--index).addClass('active');
 										}else if(index==0 && detailList.length>0){
-											$jq('.item').eq(index).addClass('active');
+											$jq('.item').eq(index).myCarouseladdClass('active');
 										}else if(index==0&&detailList.length==0){
 											location.href = "index.php?r=pai-pictures/index";
 										}
@@ -479,6 +594,102 @@ input:focus {
 				});
 				});
 	});
+
+///////////////////////////////
+//全局变量，触摸开始位置  
+            var startX = 0, startY = 0;  
+              
+            //touchstart事件  
+            function touchSatrtFunc(evt) {  
+                try  
+                {  
+                    //evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等  
+  
+                    var touch = evt.touches[0]; //获取第一个触点  
+                    var x = Number(touch.pageX); //页面触点X坐标  
+                    var y = Number(touch.pageY); //页面触点Y坐标  
+                    //记录触点初始位置  
+                    startX = x;  
+                    startY = y;  
+  
+//                     var text = 'TouchStart事件触发：（' + x + ', ' + y + '）';  
+//                     document.getElementById("result").innerHTML = text;  
+                }  
+                catch (e) {  
+                    alert('touchSatrtFunc：' + e.message);  
+                }  
+            }  
+  
+            //touchmove事件，这个事件无法获取坐标  
+            function touchMoveFunc(evt) {  
+                try  
+                {  
+                    //evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等  
+                    var touch = evt.touches[0]; //获取第一个触点  
+                    var x = Number(touch.pageX); //页面触点X坐标  
+                    var y = Number(touch.pageY); //页面触点Y坐标  
+  
+                    //var text = 'TouchMove事件触发：（' + x + ', ' + y + '）';  
+  
+                    //判断滑动方向  
+                    if (x - startX >5) {  
+                    	document.getElementById('left').click();
+                       // alert("right");
+                       // $jq('.next-slide').trigger("click");
+                     //   text += '<br/>左右滑动';  
+                    }  else if(x-startX<5){
+                    	document.getElementById('right').click();
+						//alert('left');
+						//$jq('.prev-slide').trigger("click");
+                        }
+//                     if (y - startY != 0) {  
+//                       //  text += '<br/>上下滑动';  
+//                     }  
+  
+                 //   document.getElementById("result").innerHTML = text;  
+                }  
+                catch (e) {  
+                    alert('touchMoveFunc：' + e.message);  
+                }  
+            }  
+  
+            //touchend事件  
+//             function touchEndFunc(evt) {  
+//                 try {  
+//                     //evt.preventDefault(); //阻止触摸时浏览器的缩放、滚动条滚动等  
+  
+//                     var text = 'TouchEnd事件触发';  
+//                     document.getElementById("result").innerHTML = text;  
+//                 }  
+//                 catch (e) {  
+//                     alert('touchEndFunc：' + e.message);  
+//                 }  
+//             }  
+  
+            //绑定事件  
+            function bindEvent() {  
+                document.getElementById('myCarousel').addEventListener('touchstart', touchSatrtFunc, false);  
+                document.getElementById('myCarousel').addEventListener('touchmove', touchMoveFunc, false);  
+                //document.addEventListener('touchend', touchEndFunc, false);  
+            }   
+  
+            //判断是否支持触摸事件  
+            function isTouchDevice() {  
+               // document.getElementById("version").innerHTML = navigator.appVersion;  
+  
+                try {  
+                    //document.createEvent("TouchEvent");  
+                   // alert("支持TouchEvent事件！");  
+  
+                    bindEvent(); //绑定事件  
+                }  
+                catch (e) {  
+                    //alert("不支持TouchEvent事件！" + e.message);  
+                }  
+            }  
+  
+            window.onload = isTouchDevice;  
+	
 </script>
 </body>
 </html>

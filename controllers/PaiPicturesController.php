@@ -58,9 +58,11 @@ class PaiPicturesController extends Controller {
 	// ]);
 	// }
 	public function actionTest() {
-		$web =new WebService();
-		$result = $web->getApps();
-		print_r($result);
+// 		$web =new WebService();
+// 		$result = $web->getApps();
+// 		print_r($result);
+
+		return $this->renderFile('@app/views/pai-pictures/refresh.php');
 
 	}
 
@@ -113,9 +115,9 @@ class PaiPicturesController extends Controller {
 		 * ************************ 临时获取token测试用 begin**********************************
 		 */
 
-		if (! ($request->get ( 'uid' ) && $request->get ( 'auth_token' ))) {
+		if (! ($request->get ( 'uid' ) && $request->get ( 'auth_token' )&& $request->get ( 'eguid'))) {
 			$params = [
-					'name' => '18900913302',
+					'name' => '18900913303',
 					'password' => '123456',
 					'api_key' => '36116967d1ab95321b89df8223929b14207b72b1'
 			];
@@ -124,17 +126,18 @@ class PaiPicturesController extends Controller {
 			$uid = $result->result->uid;
 			$auth_token = $result->result->auth_token;
 			$eguid = $result->result->eguid;
+
+			/**
+			 * ************************ 临时获取token测试用 end**********************************
+			 *
+			 */
+
+		}else{
+			$uid = $request->get ( 'uid');
+			$eguid = $request->get ( 'eguid');
+			$auth_token = $request->get ( 'auth_token');
 		}
 
-		/**
-		 * ************************ 临时获取token测试用 end**********************************
-		 */
-
-		$uid = $request->get ( 'uid', $uid );
-		$eguid = $request->get ( 'eguid', $eguid );
-		$auth_token = $request->get ( 'auth_token', $auth_token );
-		$gid = $request->get ( 'gid' );
-		$nid = $request->get ( 'nid' );
 		$lappid = $request->get ( 'lappid', '48' );
 		$eid = explode ( '@', $uid ) [1];
 
@@ -145,11 +148,6 @@ class PaiPicturesController extends Controller {
 		$session ['lappid'] = $lappid;
 
 		$webService = new WebService ();
-
-		// 获取轻应用列表
-		// $result1 = $webService->getApps();
-		// print_r($result1);
-		// return;
 
 		// 验证认证信息有效性
 		$result = $webService->checkAuth_Token ();
@@ -189,7 +187,7 @@ class PaiPicturesController extends Controller {
 			$total = PaiPictures::find ()->where ( [
 					'fowner' => $uid
 			] )->count ();
-			$totalPage = ceil ( $Total / $pageSize );
+			$totalPage = ceil ( $total / $pageSize );
 
 			$data = PaiPictures::find ()->where ( [
 					'fowner' => $uid
@@ -222,13 +220,13 @@ class PaiPicturesController extends Controller {
 // 			] )->asArray ()->all ();
 // 		}
 
-		return $this->renderFile ( '@app/views/pai-pictures/pickList.php', [
+		return $this->renderFile ( '@app/views/pai-pictures/piclist.php', [
 // 				'model' => $model,
 				'pageSize' => $pageSize,
 				'total' => $total,
 				'totalPage' => $totalPage,
-				'data' =>  $data,
-// 				'data' => json_encode ( $dataBill ),
+// 				'data' =>  $data,
+				'data' => json_encode ( $data ),
 
 		] );
 	}
@@ -244,7 +242,7 @@ class PaiPicturesController extends Controller {
 		$request = Yii::$app->request;
 		$session = Yii::$app->session;
 		$page = $request->get('page','0');
-		$pageSize = $session['pageSize'];
+		$pageSize = $session['pageSize']/2;
 		date_default_timezone_set ( 'PRC' );
 // 		$curTime = date ( 'Y-m-d H:i:s' );
 
@@ -313,13 +311,15 @@ class PaiPicturesController extends Controller {
 	 * @return mixed
 	 */
 	public function actionRight() {
+		$session = Yii::$app->session;
+		$request = Yii::$app->request;
 		$admin = $session->get ( 'admin', '0' );
 		// $admin='1';
-		$id = Yii::$app->request->get ( 'id', '0' );
+		$id = $request->get ( 'id', '0' );
 		if ($admin == 0) {
 			// 向右查看
 			$modelRight = PaiPictures::find ()->where ( [
-					'fOwner' => WebService::getUid ()
+					'fOwner' => $session['userId']
 			] )->andwhere ( [
 					'<',
 					'fCreateTime',
@@ -350,14 +350,16 @@ class PaiPicturesController extends Controller {
 	 * @return mixed
 	 */
 	public function actionLeft() {
-		// $admin=$session->get('admin');
-		$admin = '1';
-		$id = Yii::$app->request->get ( 'id', '0' );
+		$session = Yii::$app->session;
+		$request = Yii::$app->request;
+		 $admin=$session->get('admin');
+// 		$admin = '1';
+		$id = $request->get ( 'id', '0' );
 		if ($admin == 0) {
 
 			// 向左查看
 			$modelLeft = PaiPictures::find ()->where ( [
-					'fOwner' => WebService::getUid ()
+				 'fOwner' => $session['userId']
 			] )->andwhere ( [
 					'>',
 					'fCreateTime',
@@ -392,7 +394,7 @@ class PaiPicturesController extends Controller {
 				'model' => $this->findModel ( $id )
 		] );
 	}
-	public function actionUpload() {
+	public function actionUploadtest() {
 		return $this->renderFile ( '@app/views/pai-pictures/upload.php' );
 	}
 
@@ -403,18 +405,19 @@ class PaiPicturesController extends Controller {
 	 * @param string $id
 	 * @return mixed
 	 */
-	public function actionCreate() {
+	public function actionUpload() {
 		$data = Yii::$app->request->post ( 'params' );
-
+		$session = Yii::$app->session;
 		$model = new PaiPictures ();
 		$utils = new UtilsModel ();
 
 		// 拼接缩略图地址(android终端不返回缩略图地址，要在原图地址上拼接出缩略图地址，将原图地址最后的'..'换成'small.'即可)
 		$arr = explode ( '..', $data ['uploadPath'] );
 		if (count ( $arr ) > 1) {
-			$fThumb = $arr [0] . 'small.' . $arr [1];
+			//缩略图jpg
+			$fThumb = $arr [0] . 'small.jpg?'. explode ( '?', $arr [1] )[1];
 		} else {
-			$fThumb = $data ['uploadPath'];
+			$fThumb = $data ['thumb'];
 		}
 
 		$model->fID = $utils->saveGetmaxNum ( 'QJDH', 11 );
@@ -445,8 +448,9 @@ class PaiPicturesController extends Controller {
 				$to_uids [$key] = $arr ['user_id'];
 			}
 
-			$url = 'http://' . $_SERVER ['HTTP_HOST'] . '/basic/web/index.php?r=pai-pictures/index&uid=&eguid=&auth_token=&lappid=';
-			$title = '有新图片上传';
+
+			$url = 'http://'.$_SERVER ['HTTP_HOST'].'/basic_pai/web/index.php?r=pai-pictures/index&uid=&eguid=&auth_token=';
+			$title = $session ['userName'].'上传了图片!';
 
 			$result = $web->sendNotice ($to_uids, $title, $url );
 
@@ -456,6 +460,7 @@ class PaiPicturesController extends Controller {
 						'success' => $success
 				] );
 				exit ();
+
 			}
 			if ('0' != $result->status) {
 
