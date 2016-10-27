@@ -27,12 +27,12 @@
 	</div>
 		<div class="list-group"></div>
 
-<!--
-		<div id="pullUp" onclick=getData();>
-			<span class="pullUpIcon"></span><span class="pullUpLabel">点击加载更多...</span>
+
+		<div id="pullUp" >
+			<span class="pullUpIcon"></span><span class="pullUpLabel">上拉加载更多....</span>
 			<li class="list"></li>
 		</div>
--->
+
 <script>
 	function chooseSheetPhoto(){
 		var transferid = parseInt(new Date().getTime()/1000);
@@ -122,14 +122,8 @@
 
 	});
 	function getData(){
-		if(TotalPage-CurPage>0){
 			CurPage+=1;
 			getnewData(CurPage);
-		}
-		else{
-			$jq(".pullUpLabel").html("没有更多数据了...");
-		}
-
 	}
 
 	function getnewData(page){
