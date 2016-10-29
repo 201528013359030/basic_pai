@@ -4,12 +4,12 @@
 <meta charset="utf-8" />
 <meta name="viewport"
 	content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
-<title>iSlider with plugin zoompic</title>
+<title>详细信息</title>
     <?php use yii\helpers\Html;?>
     <?=Html::cssFile('../views/css/iSlider.css')?>
     <?=Html::cssFile('../views/css/bootstrap.min.css')?>
     <script src="../views/js/jquery.js"></script>
-	<script src="../views/js/bootstrap.min.js"></script>
+<script src="../views/js/bootstrap.min.js"></script>
     <?=Html::cssFile('../views/css/jquery-confirm.css')?>
     <style>
 body {
@@ -49,15 +49,15 @@ body {
 
 #iSlider-wrapper li img {
 	max-width: 100%;
-	max-height:100%;
+	max-height: 100%;
 	/*
 	max-height: 100%;
 	*/
 }
 
 /*
-     
-     
+
+
      */
 a, a:focus, a:hover, input:focus {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -72,17 +72,17 @@ a, a:focus, a:hover, input:focus {
 #back {
 	margin-left: 30px;
 	float: left;
-	margin-bottom:1px
+	margin-bottom: 1px
 }
 
 .panel-body div {
 	font-size: 16px;
 	padding: 2px;
-    margin-bottom:1px
+	margin-bottom: 1px
 }
 
 .panel-footer {
-	margin-bottom:0px;
+	margin-bottom: 0px;
 }
 
 input, input:focus {
@@ -106,8 +106,8 @@ input, input:focus {
 	left: 0;
 	margin-bottom: 0;
 	z-index: 999;
-	float: left ;
-	
+	float: left;
+
 	/*
 	z-index: 999;
 	*/
@@ -121,7 +121,7 @@ input:focus {
 </head>
 <body>
 	<div id="iSlider-wrapper"></div>
-	
+
 	<!-- panel begin -->
 	<div class='panel panel-default'>
 		<div class='panel-heading text-center'>图片信息</div>
@@ -156,8 +156,7 @@ input:focus {
 		<!-- panel-footer begin -->
 		<div class='panel-footer' style='text-align: center'>
 			<a href='index.php?r=pai-pictures/index'><span
-				class='glyphicon glyphicon-chevron-left' id='back'></span></a> 
-				 <span
+				class='glyphicon glyphicon-chevron-left' id='back'></span></a> <span
 				class='glyphicon glyphicon-trash ' id='delete'></span>
 		</div>
 		<!-- panel-footer end -->
@@ -197,7 +196,8 @@ input:focus {
         data: list,
         isLooping: 0,
         isOverspread: false,
-        animateTime: 800, // ms
+        animateTime: 1000, // ms
+        fillSeam:true,
         isDebug:0,
         plugins: [['zoompic', {zoomFactor: 3}]],
         oninitialize:initialize,
@@ -212,7 +212,7 @@ input:focus {
         onslidechanged:slideChanged,
         onsliderestore:slideRestore,
         onsliderestored:slideRestored,
-        loadData:loadData  
+        loadData:loadData
     });
     function initialize(){
 		console.log('initialize');
@@ -230,8 +230,8 @@ input:focus {
 		console.log('rendercomplete');
 		$jq('.fOwner').text(detailList[this.slideIndex]['fOwner']);
 		$jq('.fDescription').val(detailList[this.slideIndex]['fDescription']);
-		$jq('.fCreateTime').text(detailList[this.slideIndex]['fCreateTime']);	
-		index=this.slideIndex;	
+		$jq('.fCreateTime').text(detailList[this.slideIndex]['fCreateTime']);
+		index=this.slideIndex;
         }
     function slideStart(e){
         console.log(this.slideIndex)
@@ -270,7 +270,7 @@ input:focus {
     function slideRestore(){
 		index=this.slideIndex;
         var direction;
-       
+
 		if(clientEndX-clientStartX>0){
 			direction='left';
 		}else{
@@ -323,7 +323,7 @@ input:focus {
 
 //               }
     }
-        
+
 function Slide(e){
 	console.log(e);
 }
@@ -353,7 +353,7 @@ function onSlide(e){
     ////
 //         $jq('.text ').click(function(){
 // // 				console.log('dd');
-				
+
 // // 				console.log($jq('.panel').is(":hidden"));
 // 				if($jq('.panel-heading').is(":hidden")&&$jq('.panel-body').is(":hidden")){
 // 					$jq('.text').text('点击隐藏详细信息');
@@ -404,7 +404,7 @@ function onSlide(e){
 						if(length>0){
 							index=datas.length-1;
 						}
-						//console.log(list);			
+						//console.log(list);
 			   },
 			 complete:function(){
 					}
@@ -437,7 +437,7 @@ function onSlide(e){
 						console.log("datas begin");
 						console.log(datas[i]['fPreviewPath'])
 						list.push({content:datas[i]['fPreviewPath']});
-					
+
 						}
 					console.log(list);
 					if(length>0){
@@ -454,7 +454,7 @@ function onSlide(e){
 	function setInformation(_index){
 		$jq('.fOwner').text(detailList[_index]['fOwner']);
 		$jq('.fDescription').val(detailList[_index]['fDescription']);
-		$jq('.fCreateTime').text(detailList[_index]['fCreateTime']);		
+		$jq('.fCreateTime').text(detailList[_index]['fCreateTime']);
 		}
 
 	//保存图片描述信息

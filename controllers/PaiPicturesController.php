@@ -284,13 +284,14 @@ class PaiPicturesController extends Controller {
 	 * @return mixed
 	 */
 	public function actionDetail($id) {
-		return $this->renderFile ( '@app/views/pai-pictures/detail.php', [ 
+		return $this->renderFile ( '@app/views/pai-pictures/_detail.php', [ 
 				'model' => $this->findModel ( $id ) 
 		] );
 	}
 	
 	/**
 	 * Displays a single PaiPictures model as slid to the right .
+	 *
 	 *
 	 *
 	 *
