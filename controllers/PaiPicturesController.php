@@ -175,7 +175,7 @@ class PaiPicturesController extends Controller {
 
 		$session ['userName'] = $user->user_name;
 		$session ['admin'] = $user->admin;
-		$session['pageSize'] = 8;
+		$session['pageSize'] = 4;
 		date_default_timezone_set ( 'PRC' );
 		$pageSize = $session['pageSize'];
 // 		curTime = date ( 'Y-m-d H:i:s' );
@@ -243,7 +243,7 @@ class PaiPicturesController extends Controller {
 		$session = Yii::$app->session;
 		$uid =$session ['userId'];
 		$page = $request->get('page','0');
-		$pageSize = $session['pageSize']/2;
+		$pageSize = $session['pageSize'];
 		date_default_timezone_set ( 'PRC' );
 // 		$curTime = date ( 'Y-m-d H:i:s' );
 
@@ -274,7 +274,7 @@ class PaiPicturesController extends Controller {
 
 			$data = PaiPictures::find ()->orderBy ( [
 					'fCreateTime' => SORT_DESC
-			] )->offset ( $page*$pageSize )->limit ( $pageSize )->asArray ()->all ();
+			] )->offset ( $page*$pageSize )->limit ( $pageSize)->asArray ()->all ();
 		}
 
 		echo json_encode ( [
@@ -289,7 +289,7 @@ class PaiPicturesController extends Controller {
 	 * @param string $id
 	 * @return mixed
 	 */
-	public function actionDetail($id = '6') {
+	public function actionDetail($id ) {
 		return $this->renderFile ( '@app/views/pai-pictures/detail.php', [
 				'model' => $this->findModel ( $id )
 		] );
